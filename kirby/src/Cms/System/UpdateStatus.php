@@ -206,6 +206,20 @@ class UpdateStatus
 			];
 		}
 
+		// add special message for end-of-life PHP versions
+		$phpMajor = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+		$phpEol   = $this->data['php'][$phpMajor] ?? null;
+		if (is_string($phpEol) === true && $eolTime = strtotime($phpEol)) {
+			// the timestamp is available and valid, now check if it is in the past
+			if ($eolTime < time()) {
+				$messages[] = [
+					'text' => I18n::template('system.issues.eol.php', null, ['release' => $phpMajor]),
+					'link' => 'https://getkirby.com/security/php-end-of-life',
+					'icon' => 'bell'
+				];
+			}
+		}
+
 		return $this->messages = $messages;
 	}
 
@@ -435,9 +449,7 @@ class UpdateStatus
 				// verify that we found at least one possible version;
 				// otherwise try the `$maxVersion` as a last chance before
 				// concluding at the top that we cannot solve the task
-				if ($incidentVersion === null) {
-					$incidentVersion = $maxVersion;
-				}
+				$incidentVersion ??= $maxVersion;
 
 				// we need a version that fixes all vulnerabilities, so use the
 				// "largest of the smallest" fixed versions

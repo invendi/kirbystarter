@@ -61,7 +61,7 @@ class Segments extends Collection
 		return preg_split(
 			'/(\??\.)|(\(([^()]+|(?2))*+\))(*SKIP)(*FAIL)/',
 			trim($string),
-			flags: PREG_SPLIT_DELIM_CAPTURE|PREG_SPLIT_NO_EMPTY
+			flags: PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY
 		);
 	}
 
@@ -81,8 +81,9 @@ class Segments extends Collection
 				return null;
 			}
 
-			// for regular connectors, just skip
-			if ($segment === '.') {
+			// for regular connectors and optional chaining on non-null,
+			// just skip this connecting segment
+			if ($segment === '.' || $segment === '?.') {
 				continue;
 			}
 
